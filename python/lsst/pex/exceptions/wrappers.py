@@ -5,12 +5,14 @@ from . import exceptionsLib
 
 registry = {}
 
+
 def register(cls):
     """A Python decorator that adds a Python exception wrapper to the registry that maps C++ Exceptions
     to their Python wrapper classes.
     """
     registry[cls.WrappedClass] = cls
     return cls
+
 
 class ExceptionMeta(type):
     """A metaclass for custom exception wrappers, which adds lookup of class attributes
@@ -19,6 +21,7 @@ class ExceptionMeta(type):
 
     def __getattr__(self, name):
         return getattr(self.WrappedClass, name)
+
 
 @register
 class Exception(StandardError):
@@ -52,61 +55,76 @@ class Exception(StandardError):
     def __str__(self):
         return self.cpp.asString()
 
+
 @register
 class LogicError(Exception):
     WrappedClass = exceptionsLib.LogicError
+
 
 @register
 class DomainError(LogicError):
     WrappedClass = exceptionsLib.DomainError
 
+
 @register
 class InvalidParameterError(LogicError):
     WrappedClass = exceptionsLib.InvalidParameterError
+
 
 @register
 class LengthError(LogicError):
     WrappedClass = exceptionsLib.LengthError
 
+
 @register
 class OutOfRangeError(LogicError):
     WrappedClass = exceptionsLib.OutOfRangeError
+
 
 @register
 class RuntimeError(Exception, __builtin__.RuntimeError):
     WrappedClass = exceptionsLib.RuntimeError
 
+
 @register
 class RangeError(RuntimeError):
     WrappedClass = exceptionsLib.RangeError
+
 
 @register
 class OverflowError(RuntimeError, __builtin__.OverflowError):
     WrappedClass = exceptionsLib.OverflowError
 
+
 @register
 class UnderflowError(RuntimeError, __builtin__.ArithmeticError):
     WrappedClass = exceptionsLib.UnderflowError
+
 
 @register
 class NotFoundError(Exception, __builtin__.LookupError):
     WrappedClass = exceptionsLib.NotFoundError
 
+
 @register
 class MemoryError(RuntimeError, __builtin__.MemoryError):
     WrappedClass = exceptionsLib.MemoryError
+
 
 @register
 class IoError(RuntimeError, __builtin__.IOError):
     WrappedClass = exceptionsLib.IoError
 
+
 @register
 class TypeError(RuntimeError, __builtin__.TypeError):
     WrappedClass = exceptionsLib.TypeError
 
+
 @register
 class TimeoutError(RuntimeError):
     WrappedClass = exceptionsLib.TimeoutError
+
 
 def translate(cpp):
     """Translate a C++ Exception instance to Python and return it."""
